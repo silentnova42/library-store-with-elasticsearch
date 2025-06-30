@@ -15,7 +15,7 @@ func NewServer() *server {
 
 func (s *server) RunServer(addr string, handler http.Handler) error {
 	s.httpServer = &http.Server{
-		Addr:         addr,
+		Addr:         ":" + addr,
 		Handler:      handler,
 		IdleTimeout:  5 * time.Second,
 		ReadTimeout:  5 * time.Second,
