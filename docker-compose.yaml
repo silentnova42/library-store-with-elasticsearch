@@ -28,7 +28,7 @@ services:
     image: migrate/migrate:4
     container_name: migrate 
     volumes:
-      - ./internal/db/migrate:/migration
+      - ./migrate:/migration
     entrypoint: [
       "sh",
       "-c",

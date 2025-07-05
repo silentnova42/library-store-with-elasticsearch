@@ -5,26 +5,10 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/silentnova42/library-store-with-elasticsearch/internal/model"
 )
 
-type IAuth interface {
-	NewToken()
-	Refresh()
-}
-
 type Auth struct{}
-
-type ResponsToken struct {
-	AccessToken  string
-	RefreshToken string
-}
-
-type DataForRefresh struct {
-	AccessKey  []byte
-	RefreshKey []byte
-	AccessExt  time.Duration
-	RefreshExt time.Duration
-}
 
 func (a *Auth) NewToken(userId int, ext time.Duration, key []byte) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
@@ -65,7 +49,7 @@ func (a *Auth) Parse(accessToken string, accessKey []byte) (int, error) {
 	return id, nil
 }
 
-func (a *Auth) Refresh(refreshToken string, data DataForRefresh) (*ResponsToken, error) {
+func (a *Auth) Refresh(refreshToken string, data model.DataForRefresh) (*model.ResponsToken, error) {
 	token, err := jwt.Parse(refreshToken, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method")
@@ -102,7 +86,7 @@ func (a *Auth) Refresh(refreshToken string, data DataForRefresh) (*ResponsToken,
 		return nil, err
 	}
 
-	resp := ResponsToken{
+	resp := model.ResponsToken{
 		AccessToken:  newAccessToken,
 		RefreshToken: newRefreshToken,
 	}
