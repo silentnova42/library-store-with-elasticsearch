@@ -10,5 +10,6 @@ RUN CGO_ENABLED=0 GOOSE=linux go build -o main ./cmd/main.go
 FROM alpine:3.22.0
 WORKDIR /root
 
+COPY --from=builder /root/configs/ ./configs
 COPY --from=builder /root/main .
 CMD [ "./main" ]

@@ -1,0 +1,5 @@
+db:
+  user: "postgres"
+  host: "db"
+  sslmode: "disable"
+  dbname: postgres

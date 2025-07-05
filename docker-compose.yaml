@@ -1,11 +1,46 @@
 services:
+  db:
+    image: postgres:17.5
+    container_name: "db"
+    ports:
+      - ${PORT_DB}:${PORT_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      - PORT_DB=${PORT_DB}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    networks:
+      - appnet
   app:
     build: .
     container_name: "app"
     ports:
-      - "8080:8080"
+      - ${PORT_APP}:${PORT_APP}
+    depends_on:
+      - db
+    environment:
+      - PORT_APP=${PORT_APP}
+      - PORT_DB=${PORT_DB}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     networks:
       - appnet
+  migrate:
+    image: migrate/migrate:4
+    container_name: migrate 
+    volumes:
+      - ./migrate:/migration
+    entrypoint: [
+      "sh",
+      "-c",
+      "sleep 5 && migrate -path /migration -database postgres://postgres:${POSTGRES_PASSWORD}@db:${PORT_DB}/postgres?sslmode=disable up"
+    ]
+    depends_on:
+      - db
+    networks:
+      - appnet
+
+volumes:
+  pgdata:
 
 networks:
   appnet:
